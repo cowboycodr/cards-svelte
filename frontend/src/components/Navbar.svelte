@@ -1,7 +1,7 @@
 <script>
-  export let user;
+  import axios from 'axios';
 
-  let src = user.pfp;
+  export let uid;
 
   document.addEventListener("scroll", handleNavbarScroll);
 
@@ -17,24 +17,42 @@
       profileContainer.classList.remove("scrolled");
     }
   }
+
+  let basepath = 'http://localhost:5050';
+
+  function getRoute(route) {
+    return `${basepath}/${route}`;
+  }
+
+  async function getUser(uid) {
+    const path = getRoute(`users/${uid}`);
+
+    return await axios
+                  .get(path)
+                  .then(response => response.data.user)
+  }
 </script>
 
-<div class="navbar scrolled" id="navbar" use:handleNavbarScroll>
-  <img
-    class="profile-picture"
-    {src}
-    alt="profile"
-    style="width:60px;height:60px;"
-  />
-  <div class="profile-container scrolled" id="profile-container">
-    <div class="nick">
-      {user.nick}
-    </div>
-    <div class="name">
-      {'@' + user.name}
+{#await getUser(uid)}
+  <p>Loading...</p>
+{:then user}
+  <div class="navbar scrolled" id="navbar" use:handleNavbarScroll>
+    <img
+      class="profile-picture"
+      src="{user.pfp}"
+      alt="profile"
+      style="width:60px;height:60px;"
+    />
+    <div class="profile-container scrolled" id="profile-container">
+      <div class="nick">
+        {user.nick}
+      </div>
+      <div class="name">
+        {'@' + user.name}
+      </div>
     </div>
   </div>
-</div>
+{/await}
 
 <style>
   .navbar {

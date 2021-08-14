@@ -1,8 +1,10 @@
 <script>
 	import axios from 'axios';
-	import Navbar from './Navbar.svelte'
-	import Card from './Card.svelte';
-import Fa from 'svelte-fa/src/fa.svelte';
+	import { Router, Route, Link } from "svelte-navigator";
+	import Navbar from './components/Navbar.svelte'
+	import Cards from './routes/Cards.svelte';
+
+	// export let url = "http://localhost:5000";
 
 	let users;
 	let cards = [];
@@ -28,31 +30,18 @@ import Fa from 'svelte-fa/src/fa.svelte';
 						.then(reponse => reponse.data.user)
 	}
 
-	async function getCards() {
-		const path = getRoute('cards')
-
-		return await axios
-									.get(path)
-									.then(reponse => reponse.data.cards)
-	}
-
 	let userID = 'fd96f338-ba68-4f6b-88d9-b272ca61ea33';
 </script>
 
-<main>
-	{#await getUser(userID)}
-		<p>loading...</p>
-	{:then user}
-  	<Navbar { user } />
-	{/await}
-  {#await getCards()}
-		<p>loading</p>
-	{:then cards}
-		{#each cards as card}
-			<Card {...card} />
-		{/each}
-	{/await}
-</main>
+<Router>
+	<header>
+		<Navbar uid={userID} />
+	</header>
+
+	<Route path="/">
+		<Cards />
+	</Route>
+</Router>
 
 <style>
 </style>
