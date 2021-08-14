@@ -1,47 +1,45 @@
 <script>
-	import axios from 'axios';
-	import { Router, Route, Link } from "svelte-navigator";
-	import Navbar from './components/Navbar.svelte'
-	import Cards from './routes/Cards.svelte';
+  import axios from "axios";
+  import Router from "svelte-spa-router";
+  import CreateCard from "./components/CreateCard.svelte";
+  import Navbar from "./components/Navbar.svelte";
+  import Cards from "./routes/Cards.svelte";
 
-	// export let url = "http://localhost:5000";
+  // export let url = "http://localhost:5000";
 
-	let users;
-	let cards = [];
+  let users;
+  let cards = [];
 
-	let basepath = 'http://localhost:5050'
+  let basepath = "http://localhost:5050";
 
-	function uuidv4() {
-		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  	});
-	}
+  function getRoute(route) {
+    return `${basepath}/${route}`;
+  }
+  async function getUser(uid) {
+    const path = getRoute(`users/${uid}`);
 
-	function getRoute(route) {
-		return `${basepath}/${route}`
-	}
+    return await axios
+									.get(path)
+									.then(response => response.data.user);
+  }
 
-	async function getUser(uid) {
-		const path = getRoute(`users/${uid}`)
-
-		return await axios
-						.get(path)
-						.then(reponse => reponse.data.user)
-	}
-
-	let userID = 'fd96f338-ba68-4f6b-88d9-b272ca61ea33';
+  let uid = "c12073cc-c3c0-468a-9393-f46836b0e607";
 </script>
 
-<Router>
-	<header>
-		<Navbar uid={userID} />
-	</header>
+<main>
+  {#await getUser(uid)}
+    <p>Loading...</p>
+  {:then user}
+    <Navbar {user} />
+  {/await}
 
-	<Route path="/">
-		<Cards />
-	</Route>
-</Router>
+  <Router
+    routes={{
+      "/": Cards,
+      "/create": CreateCard,
+    }}
+  />
+</main>
 
 <style>
 </style>

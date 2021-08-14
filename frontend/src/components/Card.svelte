@@ -1,42 +1,29 @@
 <script>
   import Fa from "svelte-fa/src/fa.svelte";
-  import axios from "axios";
   import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
   import { faPlus } from "@fortawesome/free-solid-svg-icons";
   import { faShare } from "@fortawesome/free-solid-svg-icons";
 
-  export let user_id;
-  export let id;
-
+  export let author;
+  export const id = null;
   export let content;
 
   export let likes;
   export let shares;
-
-  async function getUser(user_id) {
-    const path = `http://localhost:5050/users/${user_id}`;
-
-    return await axios.get(path)
-                  .then((response) => response.data.user);
-  }
 </script>
 
 <div class="card">
   <div class="top">
     <div class="profile">
-      {#await getUser(user_id)}
-        <p>loading</p>
-      {:then user}
-        <img class="profile-picture" src={user.pfp} alt="profile" />
+        <img class="profile-picture" src={author.pfp} alt="profile" />
         <div class="names">
           <span class="nick">
-            {user.nick}
+            {author.nick}
           </span>
           <span class="name">
-            {"@" + user.name}
+            {"@" + author.name}
           </span>
         </div>
-      {/await}
     </div>
   </div>
   <div class="content">

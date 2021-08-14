@@ -1,79 +1,66 @@
 import uuid
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from pymongo import MongoClient
+
+client = MongoClient(port=27017)
+db = client.cards
 
 app = Flask(__name__)
 CORS(app)
 
-USERS = [
-  {
-    'id': 'fd96f338-ba68-4f6b-88d9-b272ca61ea33',
-    'name': 'cowboycodr',
-    'nick': 'Kian',
-    'pfp': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwOAz9F23MraOeH5RtdAj883MB-ywpMIPYSv36fcSVFazd1DQANyabtJ3eKBgRw1_t2PM&usqp=CAU'
-  }
-]
-
-CARDS = [
-  {
-    'user_id': USERS[0]['id'],
-    'id': str(uuid.uuid4()),
-    'content': 'Cards, the in-progress, open-source, simplistic retake of social media',
-    'likes': 0,
-    'shares': 0
-  }
-]
-
-@app.route('/', methods=['GET'])
+@app.route('/')
 def index():
-  api_urls = {
+  api_calls = {
     'users': '/users',
-    'cards': '/cards',
+    'cards': '/cards'
   }
 
-  return jsonify(api_urls)
+  return jsonify(api_calls)
 
-@app.route('/cards', methods=['GET'])
+@app.route('/cards', methods=['POST', 'GET'])
 def cards():
-  response_object = {'status': 200}
-
-  if request.method == 'GET':
-    response_object['cards'] = CARDS
-
-  return jsonify(response_object)
-
-@app.route('/cards/<card_id>', methods=['GET'])
-def card(card_id):
-  response_object = {'status': 200}
-
-  if request.method == 'GET':
-    for card in CARDS:
-      if card['id'] == card_id:
-        response_object['card'] = card
-        break
-
-    response_object['status'] = 400
-
-  return jsonify(response_object)
-
-@app.route('/users', methods=['GET'])
-def users():
   reponse_object = {'status': 200}
 
   if request.method == 'GET':
-    reponse_object['users'] = USERS
+    cursor = db.cards.find({})
+    result = []
+
+    for document in cursor:
+      document['_id'] = str(document['_id'])
+      result.append(document)
+
+    reponse_object['cards'] = result
+  elif request.method == 'POST':
+    pass
 
   return jsonify(reponse_object)
 
-@app.route('/users/<user_id>', methods=['GET'])
+@app.route('/users')
+def users():
+  response_object = {'status': 200}
+
+  if request.method == 'GET':
+    cursor = db.users.find({})
+    result = []
+
+    for document in cursor:
+      document['_id'] = str(document['_id'])
+      result.append(document)
+
+    response_object['users'] = result
+
+  return jsonify(response_object)
+
+@app.route('/users/<user_id>')
 def user(user_id):
   response_object = {'status': 200}
 
   if request.method == 'GET':
-    for user in USERS: 
-      if user['id'] == user_id:
-        response_object['user'] = user
-    response_object['status'] = 400
+    result = db.users.find_one({'id': user_id})
+    result['_id'] = str(result['_id'])
+
+    response_object['user'] = result
 
   return jsonify(response_object)
 
