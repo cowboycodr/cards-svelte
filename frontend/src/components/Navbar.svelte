@@ -9,12 +9,24 @@
     let navbar = document.getElementById("navbar");
     let profileContainer = document.getElementById("profile-container");
 
+    let effectedByScroll = [
+      'navbar',
+      'profile-container',
+      'create-button',
+    ]
+
     if (window.scrollY >= navbar.offsetHeight) {
-      navbar.classList.add("scrolled");
-      profileContainer.classList.add("scrolled");
+      effectedByScroll.forEach(function(item, index) {
+        let element = document.getElementById(item);
+
+        element.classList.add('scrolled')
+      })
     } else {
-      navbar.classList.remove("scrolled");
-      profileContainer.classList.remove("scrolled");
+      effectedByScroll.forEach(function(item, index) {
+        let element = document.getElementById(item);
+
+        element.classList.remove('scrolled')
+      })
     }
   }
 
@@ -41,6 +53,11 @@
     <div class="name">
       {"@" + user.name}
     </div>
+  </div>
+  <div class="create-button-container">
+    <button class="create-button scrolled" id="create-button">
+      Create
+    </button>
   </div>
 </div>
 
@@ -103,4 +120,36 @@
     font-size: 13px;
     color: rgb(115, 115, 115);
   }
+
+  .create-button-container {
+    margin-left: auto;
+    width: 10%;
+    min-width: 75px;
+    max-width: 135px;
+    /* align-self: center; */
+  }
+
+  .create-button {
+    align-self: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
+    font-size: 20px;
+    text-shadow: black 0px 0px 2px;
+  }
+
+  .create-button.scrolled {
+    border-radius: 0px 20px 20px 0px;
+    box-shadow: white 0px 0px 15px
+  }
+
+  .create-button:hover {
+    background-color: black;
+    color: white;
+    box-shadow: black 0px 0px 15px;
+    border: 1px solid black;
+
+    transition: 0.25s;
+  }
+
 </style>

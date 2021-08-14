@@ -23,14 +23,25 @@ def cards():
   reponse_object = {'status': 200}
 
   if request.method == 'GET':
-    cursor = db.cards.find({})
-    result = []
+    result = db.cards.find(
+      filter={},
+      projection={
+        '_id': 0,
+        'id': 1,
+        'content': 1,
+        'author': 1,
+        'likes': 1,
+        'shares': 1
+      }
+    )
 
-    for document in cursor:
-      document['_id'] = str(document['_id'])
-      result.append(document)
+    cards = []
 
-    reponse_object['cards'] = result
+    for card in result:
+      card['author']['_id'] = str(card['author']['_id'])
+      cards.append(card)
+
+    reponse_object['cards'] = cards
   elif request.method == 'POST':
     pass
 

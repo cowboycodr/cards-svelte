@@ -25,7 +25,9 @@ def create_card(content, author, publish=False):
   card = {
     'id': str(uuid.uuid4()),
     'author': author,
-    content: content
+    'content': content,
+    'likes': 0,
+    'shares': 0
   }
 
   if publish:
@@ -35,10 +37,24 @@ def create_card(content, author, publish=False):
 
   return card
 
-print(
-  create_user(
-    nickname='Kian',
-    username='cowboycodr',
-    publish=True
+def get_user(id):
+  user = db.users.find_one({'id': id})
+
+  return user
+
+def get_card(id):
+  card = db.users.find_one({'id': id})
+
+  return card
+
+me = get_user('c12073cc-c3c0-468a-9393-f46836b0e607')
+
+cards = 10
+for _ in range(cards):
+  print(
+    create_card(
+      content='Cards, the in-progress, open-source, simplistic retake of social media.',
+      author=me,
+      publish=True
+    )['id']
   )
-)
